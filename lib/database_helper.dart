@@ -67,41 +67,42 @@ class DatabaseHelper {
     });
   }
 
-Future<void> _insertStandardCards(Database db) async {
-  final result = await db.query('folders');
+  Future<void> _insertStandardCards(Database db) async {
+    final result = await db.query('folders');
 
-  for (var folder in result) {
-    final folderId = folder['id'];
-    final folderName = folder['name'];
+    for (var folder in result) {
+      final folderId = folder['id'];
+      final folderName = folder['name'];
 
-    List<String> suitsForFolder = [];
-    if (folderName == 'Hearts') {
-      suitsForFolder = ['Hearts'];
-    } else if (folderName == 'Spades') {
-      suitsForFolder = ['Spades'];
-    } else if (folderName == 'Diamonds') {
-      suitsForFolder = ['Diamonds'];
-    } else if (folderName == 'Clubs') {
-      suitsForFolder = ['Clubs'];
-    }
+      List<String> suitsForFolder = [];
+      if (folderName == 'Hearts') {
+        suitsForFolder = ['Hearts'];
+      } else if (folderName == 'Spades') {
+        suitsForFolder = ['Spades'];
+      } else if (folderName == 'Diamonds') {
+        suitsForFolder = ['Diamonds'];
+      } else if (folderName == 'Clubs') {
+        suitsForFolder = ['Clubs'];
+      }
 
-    for (var suit in suitsForFolder) {
-      final cardNames = [
-        'Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'
-      ];
+      for (var suit in suitsForFolder) {
+        final cardNames = [
+          'Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'
+        ];
 
-      for (var cardName in cardNames) {
-        final imageUrl = 'https://via.placeholder.com/';
-        await db.insert('cards', {
-          'name': cardName,
-          'suit': suit,
-          'imageUrl': imageUrl,
-          'folderId': folderId,
-        });
+        for (var cardName in cardNames) {
+          final imageUrl = 'https://via.placeholder.com/';
+          await db.insert('cards', {
+            'name': cardName,
+            'suit': suit,
+            'imageUrl': imageUrl,
+            'folderId': folderId,
+          });
+        }
       }
     }
   }
-}
+
   Future<int?> addCardToFolder(String name, String suit, String imageUrl, int folderId) async {
     final db = await database;
 
