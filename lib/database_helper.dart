@@ -1,5 +1,15 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:logging/logging.dart';
+
+final log = Logger('DatabaseHelper');
+
+void setupLogging() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    log.warning('${record.level.name}: ${record.time}: ${record.message}');
+  });
+}
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -90,28 +100,29 @@ class DatabaseHelper {
           'Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'
         ];
 
-        for (var cardName in cardNames) {
-          String imageUrl = '';
-          if (suit == 'Hearts') {
-            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Naipe_copas.png/240px-Naipe_copas.png';
-          } else if (suit == 'Spades') {
-            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/SuitSpades.svg/240px-SuitSpades.svg.png';
-          } else if (suit == 'Diamonds') {
-            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/SuitDiamonds.svg/240px-SuitDiamonds.svg.png';
-          } else if (suit == 'Clubs')
-            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/SuitClubs.svg/240px-SuitClubs.svg.png';
-          }
+      for (var cardName in cardNames) {
+        String imageUrl = '';
 
-          await db.insert('cards', {
-            'name': cardName,
-            'suit': suit,
-            'imageUrl': imageUrl,
-            'folderId': folderId,
-          });
+        if (suit == 'Hearts') {
+          imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Naipe_copas.png/240px-Naipe_copas.png';
+        } else if (suit == 'Spades') {
+          imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/SuitSpades.svg/240px-SuitSpades.svg.png';
+        } else if (suit == 'Diamonds') {
+          imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/SuitDiamonds.svg/240px-SuitDiamonds.svg.png';
+        } else if (suit == 'Clubs') {
+          imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/SuitClubs.svg/240px-SuitClubs.svg.png';
         }
+
+        await db.insert('cards', {
+          'name': cardName,
+          'suit': suit,
+          'imageUrl': imageUrl,
+          'folderId': folderId,
+        });
       }
     }
   }
+}
 
   Future<int?> addCardToFolder(String name, String suit, String imageUrl, int folderId) async {
     final db = await database;
@@ -125,8 +136,12 @@ class DatabaseHelper {
     int cardCount = countResult.length;
 
     if (cardCount >= 6) {
-      print("This folder can only hold 6 cards.");
+      log.warning("This folder can only hold 6 cards.");
       return null;
+    }
+
+    if (cardCount + 1 < 3) {
+      log.warning("You need at least 3 cards in this folder.");
     }
 
     return await db.insert('cards', {
@@ -135,12 +150,6 @@ class DatabaseHelper {
       "imageUrl": imageUrl,
       "folderId": folderId,
     });
-
-    if (cardCount + 1 < 3) {
-      print("You need at least 3 cards in this folder.");
-    }
-
-    return result;
   }
 
   Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
@@ -160,7 +169,7 @@ class DatabaseHelper {
     int cardCount = countResult.length;
 
     if (cardCount >= 6) {
-      print("This folder can only hold 6 cards.");
+      log.warning("This folder can only hold 6 cards.");
       return 0;
     }
 
