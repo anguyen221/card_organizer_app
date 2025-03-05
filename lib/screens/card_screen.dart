@@ -34,16 +34,30 @@ class _CardScreenState extends State<CardScreen> {
 
   Future<void> _addCard() async {
     final db = await DatabaseHelper.instance.database;
+
     final card = CardModel(
       name: 'New Card',
       suit: 'Spades',
-      imageUrl: 'https://via.placeholder.com/150',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/SuitSpades.svg/240px-SuitSpades.svg.png',
       folderId: widget.folderId,
     );
-    await db.insert('cards', card.toMap());
-    setState(() {
-      _cards = _fetchCards();
-    });
+
+    final result = await DatabaseHelper.instance.addCardToFolder(
+      card.name,
+      card.suit,
+      card.imageUrl,
+      widget.folderId,
+    );
+
+    if (result != null) {
+      setState(() {
+        _cards = _fetchCards();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cannot add more cards to this folder.')),
+      );
+    }
   }
 
   @override
