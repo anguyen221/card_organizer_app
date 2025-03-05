@@ -125,6 +125,12 @@ class DatabaseHelper {
       "imageUrl": imageUrl,
       "folderId": folderId,
     });
+
+    if (cardCount + 1 < 3) {
+      print("You need at least 3 cards in this folder.");
+    }
+
+    return result;
   }
 
   Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
