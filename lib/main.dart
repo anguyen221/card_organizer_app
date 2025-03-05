@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/folder_screen.dart';
 
 void main() {
   runApp(CardOrganizerApp());
@@ -12,10 +13,7 @@ class CardOrganizerApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text('Card Organizer')),
-        body: Center(child: Text('Welcome to Card Organizer App!')),
-      ),
+      home: FolderScreen(),
     );
   }
 }

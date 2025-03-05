@@ -32,7 +32,7 @@ class DatabaseHelper {
         timestamp TEXT NOT NULL
       );
     ''');
-    
+
     await db.execute('''
       CREATE TABLE cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
