@@ -9,6 +9,10 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
+    
+    final dbPath = await getDatabasesPath();
+    await deleteDatabase(join(dbPath, 'cards.db'));  
+
     _database = await _initDB('cards.db');
     return _database!;
   }
@@ -21,12 +25,6 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _createDB,
-      onOpen: (db) async {
-        final result = await db.query('folders');
-        if (result.isEmpty) {
-          _insertTestFolders(db);
-        }
-      },
     );
   }
 
@@ -62,33 +60,46 @@ class DatabaseHelper {
       {'name': 'Clubs', 'timestamp': DateTime.now().toIso8601String()},
     ];
 
-    for (var folder in folderData) {
-      await db.insert('folders', folder);
-    }
+    await db.transaction((txn) async {
+      for (var folder in folderData) {
+        await txn.insert('folders', folder);
+      }
+    });
   }
 
-  Future<void> _insertStandardCards(Database db) async {
-    final result = await db.query('folders');
-    for (var folder in result) {
-      final folderId = folder['id'];
+Future<void> _insertStandardCards(Database db) async {
+  final result = await db.query('folders');
 
-      final suits = ['Hearts', 'Spades', 'Diamonds', 'Clubs'];
+  for (var folder in result) {
+    final folderId = folder['id'];
+    final folderName = folder['name'];
+
+    List<String> suitsForFolder = [];
+    if (folderName == 'Hearts') {
+      suitsForFolder = ['Hearts'];
+    } else if (folderName == 'Spades') {
+      suitsForFolder = ['Spades'];
+    } else if (folderName == 'Diamonds') {
+      suitsForFolder = ['Diamonds'];
+    } else if (folderName == 'Clubs') {
+      suitsForFolder = ['Clubs'];
+    }
+
+    for (var suit in suitsForFolder) {
       final cardNames = [
         'Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'
       ];
 
-      for (var suit in suits) {
-        for (var i = 0; i < cardNames.length; i++) {
-          final cardName = cardNames[i];
-          final imageUrl = 'https://via.placeholder.com/150?text=$cardName+of+$suit';
-          await db.insert('cards', {
-            'name': cardName,
-            'suit': suit,
-            'imageUrl': imageUrl,
-            'folderId': folderId,
-          });
-        }
+      for (var cardName in cardNames) {
+        final imageUrl = 'https://via.placeholder.com/';
+        await db.insert('cards', {
+          'name': cardName,
+          'suit': suit,
+          'imageUrl': imageUrl,
+          'folderId': folderId,
+        });
       }
     }
   }
+}
 }
