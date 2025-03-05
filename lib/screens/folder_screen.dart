@@ -4,6 +4,8 @@ import '../database_helper.dart';
 import '../screens/card_screen.dart';
 
 class FolderScreen extends StatefulWidget {
+  const FolderScreen({super.key});
+
   @override
   _FolderScreenState createState() => _FolderScreenState();
 }

@@ -5,7 +5,7 @@ import '../database_helper.dart';
 class CardScreen extends StatefulWidget {
   final int folderId;
 
-  CardScreen({required this.folderId});
+  const CardScreen({super.key, required this.folderId});
 
   @override
   _CardScreenState createState() => _CardScreenState();
