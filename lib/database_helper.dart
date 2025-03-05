@@ -91,7 +91,17 @@ class DatabaseHelper {
         ];
 
         for (var cardName in cardNames) {
-          final imageUrl = 'https://via.placeholder.com/';
+          String imageUrl = '';
+          if (suit == 'Hearts') {
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Naipe_copas.png/240px-Naipe_copas.png';
+          } else if (suit == 'Spades') {
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/SuitSpades.svg/240px-SuitSpades.svg.png';
+          } else if (suit == 'Diamonds') {
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/SuitDiamonds.svg/240px-SuitDiamonds.svg.png';
+          } else if (suit == 'Clubs')
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/SuitClubs.svg/240px-SuitClubs.svg.png';
+          }
+
           await db.insert('cards', {
             'name': cardName,
             'suit': suit,
