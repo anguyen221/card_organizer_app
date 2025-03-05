@@ -21,19 +21,25 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _createDB,
+      onOpen: (db) async {
+        final result = await db.query('folders');
+        if (result.isEmpty) {
+          _insertTestFolder(db);
+        }
+      },
     );
   }
 
   Future<void> _createDB(Database db, int version) async {
-    await db.execute('''
+    await db.execute(''' 
       CREATE TABLE folders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         timestamp TEXT NOT NULL
       );
     ''');
-    
-    await db.execute('''
+
+    await db.execute(''' 
       CREATE TABLE cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -43,5 +49,14 @@ class DatabaseHelper {
         FOREIGN KEY (folderId) REFERENCES folders (id) ON DELETE CASCADE
       );
     ''');
+
+    _insertTestFolder(db);
+  }
+
+  Future<void> _insertTestFolder(Database db) async {
+    await db.insert('folders', {
+      'name': 'Test Folder',
+      'timestamp': DateTime.now().toIso8601String(),
+    });
   }
 }
