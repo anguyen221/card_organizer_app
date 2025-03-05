@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/folder.dart';
 import '../database_helper.dart';
+import '../screens/card_screen.dart';
 
 class FolderScreen extends StatefulWidget {
   @override
@@ -88,6 +89,14 @@ class _FolderScreenState extends State<FolderScreen> {
                     return ListTile(
                       title: Text(folder.name),
                       subtitle: Text('Created: ${folder.timestamp}'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CardScreen(folderId: folder.id!),
+                          ),
+                        );
+                      },
                     );
                   }).toList(),
                 );
