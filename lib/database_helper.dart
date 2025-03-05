@@ -102,4 +102,61 @@ Future<void> _insertStandardCards(Database db) async {
     }
   }
 }
+  Future<int?> addCardToFolder(String name, String suit, String imageUrl, int folderId) async {
+    final db = await database;
+
+    List<Map<String, dynamic>> countResult = await db.query(
+      'cards',
+      where: "folderId = ?",
+      whereArgs: [folderId],
+    );
+
+    int cardCount = countResult.length;
+
+    if (cardCount >= 6) {
+      print("This folder can only hold 6 cards.");
+      return null;
+    }
+
+    return await db.insert('cards', {
+      "name": name,
+      "suit": suit,
+      "imageUrl": imageUrl,
+      "folderId": folderId,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getCardsInFolder(int folderId) async {
+    final db = await database;
+    return await db.query('cards', where: "folderId = ?", whereArgs: [folderId]);
+  }
+
+  Future<int> updateCardFolder(int cardId, int newFolderId) async {
+    final db = await database;
+
+    List<Map<String, dynamic>> countResult = await db.query(
+      'cards',
+      where: "folderId = ?",
+      whereArgs: [newFolderId],
+    );
+
+    int cardCount = countResult.length;
+
+    if (cardCount >= 6) {
+      print("This folder can only hold 6 cards.");
+      return 0;
+    }
+
+    return await db.update(
+      'cards',
+      {"folderId": newFolderId},
+      where: "id = ?",
+      whereArgs: [cardId],
+    );
+  }
+
+  Future<int> deleteCard(int cardId) async {
+    final db = await database;
+    return await db.delete('cards', where: "id = ?", whereArgs: [cardId]);
+  }
 }
